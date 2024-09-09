@@ -1,0 +1,36 @@
+name: .NET
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    - name: Show Workspace
+      run: |
+        ls ${{github.workspace}}
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Update Coverlet
+      run: dotnet tool update -g coverlet.console
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Test and Collect Code Coverage
+      run: dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+    - name: Upload Coverage Reports to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        fail_ci_if_error: true
+        verbose: true

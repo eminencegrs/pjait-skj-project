@@ -1,1 +1,3 @@
-# pjait-skj-project
+# PJAIT - SKJ Project
+
+TODO: Add description
