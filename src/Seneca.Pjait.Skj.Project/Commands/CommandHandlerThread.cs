@@ -26,7 +26,7 @@ public class CommandHandlerThread
             using var stream = this.client.GetStream();
             var buffer = new byte[1024];
             var bytesRead = stream.Read(buffer, 0, buffer.Length);
-            var receivedString = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+            var receivedString = Encoding.ASCII.GetString(buffer, 0, bytesRead).Trim();
             var hostAddress = ((IPEndPoint)this.client.Client.RemoteEndPoint).Address.ToString();
             var receivedCommand = Command.Parse(receivedString);
             Console.WriteLine($"[CommandHandlerThread] Command received: [{receivedCommand}]. From: [{hostAddress}:{this.client.Client.RemoteEndPoint}]");
