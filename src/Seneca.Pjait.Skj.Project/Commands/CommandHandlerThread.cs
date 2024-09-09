@@ -6,11 +6,12 @@ using Seneca.PJAIT.SKJ.Project.Commands.Models;
 
 namespace Seneca.PJAIT.SKJ.Project.Commands;
 
-public class CommandHandlerThread
+public class CommandHandlerThread : IDisposable
 {
     private readonly TcpClient client;
     private readonly TcpListener server;
     private readonly Dictionary<string, CommandHandler> commandHandlers;
+    private bool isDisposed = false;
 
     public CommandHandlerThread(TcpListener server, TcpClient client, Dictionary<string, CommandHandler> commandHandlers)
     {
@@ -47,6 +48,7 @@ public class CommandHandlerThread
             if (receivedCommand.Operation == "terminate")
             {
                 Console.WriteLine("[CommandHandlerThread] Received terminate signal. Terminating...");
+                this.client.Close();
                 this.server.Stop();
             }
         }
@@ -54,5 +56,34 @@ public class CommandHandlerThread
         {
             throw new Exception(e.Message);
         }
+    }
+
+    public void Dispose()
+    {
+        this.Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (this.isDisposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            this.client.Close();
+            this.client.Dispose();
+            this.server.Stop();
+            this.server.Dispose();
+        }
+
+        this.isDisposed = true;
+    }
+
+    ~CommandHandlerThread()
+    {
+        this.Dispose(false);
     }
 }
