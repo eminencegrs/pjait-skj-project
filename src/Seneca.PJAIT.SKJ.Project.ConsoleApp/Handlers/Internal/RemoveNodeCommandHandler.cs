@@ -1,5 +1,4 @@
 using Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands;
-using Seneca.PJAIT.SKJ.Project.ConsoleApp.Communication;
 
 namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Handlers.Internal;
 
@@ -14,13 +13,13 @@ public class RemoveNodeCommandHandler : CommandHandlerBase
         this.nodeRegistry = nodeRegistry;
     }
 
-    public override string GetOperationName() => OperationName;
+    protected override string GetOperationName() => OperationName;
 
-    public override string Handle(Command command, string sessionId)
+    public override string? Handle(Command command, string sessionId)
     {
-        return this.WithRequiredArgument(command, (arg) =>
+        return this.WithRequiredArgument(command, arg =>
         {
-            Node node = Node.Parse(arg);
+            var node = Node.Parse(arg);
             this.nodeRegistry.RemoveNode(node);
             return Responses.Ok;
         });

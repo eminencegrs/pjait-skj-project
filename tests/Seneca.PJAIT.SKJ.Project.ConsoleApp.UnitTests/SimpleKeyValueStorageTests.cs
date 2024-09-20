@@ -3,20 +3,20 @@ using FluentAssertions.Execution;
 using Seneca.PJAIT.SKJ.Project.ConsoleApp.Storage;
 using Xunit;
 
-namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.UnitTests.Storage;
+namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.UnitTests;
 
-public class SimpleKeyValueStorageTests
+public class KeyValueStorageTests
 {
     [Fact]
     public void GivenKeyValue_WhenTestSimpleKeyValueStorage_ThenResultAsExpected()
     {
-        var storage = new SimpleKeyValueStorage();
+        var storage = new KeyValueStorage();
         var expectedResult = new Pair(1, 1);
 
         Pair? actualResult = null;
         Action action = () =>
         {
-            storage.NewPair(expectedResult);
+            storage.CreatePair(expectedResult);
             actualResult = storage.GetPair();
         };
 

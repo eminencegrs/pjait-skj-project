@@ -1,44 +1,35 @@
 using Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands;
-using Seneca.PJAIT.SKJ.Project.ConsoleApp.Communication;
 using Seneca.PJAIT.SKJ.Project.ConsoleApp.Storage;
 
 namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Handlers.Client;
 
-public class GetMaxCommandHandler : CommandHandlerBase
+public class GetMaxCommandHandler(KeyValueStorage keyValueStorage, NodeRegistry nodeRegistry)
+    : CommandHandlerBase
 {
     public static readonly string OperationName = "get-max";
 
-    private readonly SimpleKeyValueStorage kvStorage;
-    private readonly NodeRegistry nodeRegistry;
-
-    public GetMaxCommandHandler(SimpleKeyValueStorage kvStorage, NodeRegistry nodeRegistry)
-    {
-        this.kvStorage = kvStorage;
-        this.nodeRegistry = nodeRegistry;
-    }
-
-    public override string GetOperationName() => OperationName;
+    protected override string GetOperationName() => OperationName;
 
     public override string Handle(Command command, string sessionId)
     {
-        Pair ownPair = this.kvStorage.GetPair();
+        var ownPair = keyValueStorage.GetPair();
 
-        var forwardCommandArgument = new ForwardCommandArgument(this.GetOperationName(), sessionId, this.nodeRegistry.Self);
-        var forwardCommand = new ForwardCommand(forwardCommandArgument);
+        var argument = new ForwardCommandArgument(this.GetOperationName(), sessionId, nodeRegistry.Self);
+        var forwardCommand = new ForwardCommand(argument);
 
-        Dictionary<Node, string> responses = this.nodeRegistry.SendMessageToNodesAndGatherResponses(
-            forwardCommand.Serialize(), forwardCommandArgument.SessionId);
+        var responses = nodeRegistry.SendMessageToNodesAndGatherResponses(
+            forwardCommand.Serialize(), argument.SessionId);
 
-        List<Pair> valuesToCompare = responses.Values
+        var valuesToCompare = responses.Values
             .Where(respValue => respValue != Responses.Error)
             .Select(Pair.Parse)
             .ToList();
 
         valuesToCompare.Add(ownPair);
 
-        Pair maxPair = valuesToCompare.MaxBy(x => x.Value) ?? ownPair;
+        var maxPair = valuesToCompare.MaxBy(x => x.Value) ?? ownPair;
 
-        Console.WriteLine("[GetMaxCommandHandler] Max value is: [{0}]", maxPair);
+        Console.WriteLine($"[{nameof(GetMaxCommandHandler)}] The MAX value is: [{maxPair}]");
 
         return maxPair.ToString();
     }

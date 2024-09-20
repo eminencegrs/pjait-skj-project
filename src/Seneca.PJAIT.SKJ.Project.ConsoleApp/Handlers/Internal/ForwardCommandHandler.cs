@@ -1,51 +1,48 @@
 using Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands;
-using Seneca.PJAIT.SKJ.Project.ConsoleApp.Communication;
 
 namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Handlers.Internal;
 
-public class ForwardCommandHandler : CommandHandlerBase
+public class ForwardCommandHandler(
+    Dictionary<string, CommandHandlerBase> commandHandlers, NodeRegistry nodeRegistry)
+    : CommandHandlerBase
 {
     public static readonly string OperationName = ForwardCommand.CommandName;
 
-    private readonly Dictionary<string, CommandHandlerBase> cmdHandlers;
-    private readonly NodeRegistry nodeRegistry;
+    private readonly Dictionary<string, CommandHandlerBase> cmdHandlers = new(commandHandlers);
 
-    public ForwardCommandHandler(Dictionary<string, CommandHandlerBase> commandHandlers, NodeRegistry nodeRegistry)
+    protected override string GetOperationName() => OperationName;
+
+    public override string? Handle(Command command, string sessionId)
     {
-        this.cmdHandlers = new Dictionary<string, CommandHandlerBase>(commandHandlers);
-        this.nodeRegistry = nodeRegistry;
-    }
-
-    public override string GetOperationName() => OperationName;
-
-    public override string Handle(Command command, string sessionId)
-    {
-        return this.WithRequiredArgument(command, (arg) =>
+        return this.WithRequiredArgument(command, arg =>
         {
-            ForwardCommandArgument internalArg = ForwardCommandArgument.Parse(arg);
-            if (internalArg.ClientOperation == OperationName)
+            var argument = ForwardCommandArgument.Parse(arg);
+            if (argument.ClientOperation == OperationName)
             {
-                Console.WriteLine($"[ForwardCommandHandler] ForwardCommandHandler can't process command [{OperationName}]");
+                Console.WriteLine(
+                    $"[{nameof(ForwardCommandHandler)}] ForwardCommandHandler cannot process the command [{OperationName}]");
                 return Responses.Error;
             }
 
-            if (!this.cmdHandlers.TryGetValue(internalArg.ClientOperation, out CommandHandlerBase commandHandler))
+            if (!this.cmdHandlers.TryGetValue(argument.ClientOperation, out CommandHandlerBase? commandHandler))
             {
-                Console.WriteLine($"[ForwardCommandHandler] Can't find command handler for operation [{internalArg.ClientOperation}]");
+                Console.WriteLine(
+                    $"[{nameof(ForwardCommandHandler)}] Could not find a command handler for the operation [{argument.ClientOperation}]");
                 return Responses.Error;
             }
 
-            if (this.nodeRegistry.ProcessedSessionId(internalArg.SessionId))
+            if (nodeRegistry.ProcessedSessionId(argument.SessionId))
             {
-                Console.WriteLine($"[ForwardCommandHandler] This node processed operation [{internalArg.ClientOperation}] with sessionId [{internalArg.SessionId}] already");
-                this.nodeRegistry.AddVisitedNode(internalArg.From, internalArg.SessionId);
+                Console.WriteLine(
+                    $"[{nameof(ForwardCommandHandler)}] This node has already processed the operation [{argument.ClientOperation}] with sessionId [{argument.SessionId}]");
+                nodeRegistry.AddVisitedNode(argument.From, argument.SessionId);
                 return Responses.Error;
             }
 
-            this.nodeRegistry.AddVisitedNode(internalArg.From, internalArg.SessionId);
+            nodeRegistry.AddVisitedNode(argument.From, argument.SessionId);
 
-            Command clientCommand = new Command(internalArg.ClientOperation, internalArg.Argument);
-            return commandHandler.Handle(clientCommand, internalArg.SessionId);
+            var clientCommand = new Command(argument.ClientOperation, argument.Argument);
+            return commandHandler.Handle(clientCommand, argument.SessionId);
         });
     }
 }

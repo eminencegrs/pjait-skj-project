@@ -4,11 +4,11 @@ namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Handlers;
 
 public abstract class CommandHandlerBase
 {
-    public abstract string Handle(Command command, string sessionId);
+    public abstract string? Handle(Command command, string sessionId);
 
-    public abstract string GetOperationName();
+    protected abstract string GetOperationName();
 
-    protected string WithRequiredArgument(Command command, Func<string, string> fn)
+    protected string? WithRequiredArgument(Command command, Func<string, string?> function)
     {
         if (string.IsNullOrEmpty(command.Argument))
         {
@@ -18,7 +18,7 @@ public abstract class CommandHandlerBase
             return Responses.Error;
         }
 
-        string arg = command.Argument;
-        return fn(arg);
+        var argument = command.Argument;
+        return function(argument);
     }
 }

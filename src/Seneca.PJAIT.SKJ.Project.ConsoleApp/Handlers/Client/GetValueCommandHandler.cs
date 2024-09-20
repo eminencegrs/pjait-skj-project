@@ -1,43 +1,33 @@
 using Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands;
-using Seneca.PJAIT.SKJ.Project.ConsoleApp.Communication;
 using Seneca.PJAIT.SKJ.Project.ConsoleApp.Storage;
 
 namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Handlers.Client;
 
-public class GetValueCommandHandler : CommandHandlerBase
+public class GetValueCommandHandler(KeyValueStorage keyValueStorage, NodeRegistry nodeRegistry)
+    : CommandHandlerBase
 {
     public static readonly string OperationName = "get-value";
 
-    private readonly SimpleKeyValueStorage kvStorage;
-    private readonly NodeRegistry nodeRegistry;
+    protected override string GetOperationName() => OperationName;
 
-    public GetValueCommandHandler(SimpleKeyValueStorage kvStorage, NodeRegistry nodeRegistry)
-    {
-        this.kvStorage = kvStorage;
-        this.nodeRegistry = nodeRegistry;
-    }
-
-    public override string GetOperationName() => OperationName;
-
-    public override string Handle(Command command, string sessionId)
+    public override string? Handle(Command command, string sessionId)
     {
         return this.WithRequiredArgument(command, arg =>
         {
-            int key = int.Parse(arg);
-            var maybePair = this.kvStorage.GetValue(key);
-            if (maybePair != null)
+            var key = int.Parse(arg);
+            var pair = keyValueStorage.GetValue(key);
+            if (pair != null)
             {
-                Console.WriteLine($"[GetValueCommandHandler] Found pair for key [{key}]");
-                return maybePair.Value.ToString();
+                Console.WriteLine($"[{nameof(GetValueCommandHandler)}] Found the pair for key [{key}]");
+                return pair.Value.ToString();
             }
-            else
-            {
-                Console.WriteLine($"[GetValueCommandHandler] Key [{key}] not exist");
 
-                var commandArgument = new ForwardCommandArgument(this.GetOperationName(), sessionId, this.nodeRegistry.Self, arg);
-                var forwardCommand = new ForwardCommand(commandArgument);
-                return this.nodeRegistry.SendMessageToNodesUntilFirstReplied(forwardCommand.Serialize(), sessionId);
-            }
+            Console.WriteLine($"[{nameof(GetValueCommandHandler)}] The key [{key}] does not exist");
+
+            var argument = new ForwardCommandArgument(this.GetOperationName(), sessionId, nodeRegistry.Self, arg);
+            var forwardCommand = new ForwardCommand(argument);
+
+            return nodeRegistry.SendMessageToNodesUntilFirstReply(forwardCommand.Serialize(), sessionId);
         });
     }
 }

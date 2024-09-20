@@ -1,7 +1,6 @@
 using System.Net;
 using System.Net.Sockets;
 using Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands;
-using Seneca.PJAIT.SKJ.Project.ConsoleApp.Communication;
 using Seneca.PJAIT.SKJ.Project.ConsoleApp.Handlers;
 using Seneca.PJAIT.SKJ.Project.ConsoleApp.Handlers.Client;
 using Seneca.PJAIT.SKJ.Project.ConsoleApp.Handlers.Internal;
@@ -9,6 +8,7 @@ using Seneca.PJAIT.SKJ.Project.ConsoleApp.Storage;
 
 namespace Seneca.PJAIT.SKJ.Project.ConsoleApp;
 
+// TODO: Refactoring.
 public class DatabaseNode
 {
     public async Task Run(int tcpPort, KeyValueRecord record, IReadOnlyCollection<Node> nodes)
@@ -22,8 +22,8 @@ public class DatabaseNode
 
         int initialKey = int.Parse(record.Key);
         int initialValue = int.Parse(record.Value);
-        SimpleKeyValueStorage kvStorage = new SimpleKeyValueStorage();
-        kvStorage.NewPair(new Pair(initialKey, initialValue));
+        KeyValueStorage kvStorage = new KeyValueStorage();
+        kvStorage.CreatePair(new Pair(initialKey, initialValue));
 
         Node? self = null;
         try
@@ -72,18 +72,32 @@ public class DatabaseNode
         commandHandlerMap.Add(TerminateCommandHandler.OperationName, new TerminateCommandHandler(nodeRegistry));
         commandHandlerMap.Add(ForwardCommandHandler.OperationName, new ForwardCommandHandler(commandHandlerMap, nodeRegistry));
 
+        // TODO: Refactoring.
         try
         {
-            using (var serverSocket = new TcpListener(IPAddress.Any, tcpPort))
+            try
             {
-                serverSocket.Start();
-                Console.WriteLine($"[DatabaseNode] Start listening for incoming connections on [{serverSocket.LocalEndpoint}]...");
-
-                while (true)
+                using (var serverSocket = new TcpListener(IPAddress.Any, tcpPort))
                 {
-                    var clientSocket = await serverSocket.AcceptTcpClientAsync();
-                    _ = Task.Run(() => new CommandHandlerThread(serverSocket, clientSocket, commandHandlerMap).Run());
+                    serverSocket.Start();
+                    Console.WriteLine(
+                        $"[DatabaseNode] Start listening for incoming connections on [{serverSocket.LocalEndpoint}]...");
+
+                    while (true)
+                    {
+                        var clientSocket = await serverSocket.AcceptTcpClientAsync();
+                        _ = Task.Run(
+                            () => new CommandHandlerThread(serverSocket, clientSocket, commandHandlerMap).Run());
+                    }
                 }
+            }
+            catch (SocketException ex)
+            {
+                Console.WriteLine($"[DatabaseNode] SocketException: {ex.Message}");
+            }
+            catch (ThreadAbortException ex)
+            {
+                Console.WriteLine($"Thread was aborted: {ex.Message}");
             }
         }
         catch (SocketException ex)

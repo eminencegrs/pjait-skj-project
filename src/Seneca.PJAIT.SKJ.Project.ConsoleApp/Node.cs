@@ -12,10 +12,7 @@ public class Node(string host, int port)
         return new Node(parts[0], int.Parse(parts[1]));
     }
 
-    public override string ToString()
-    {
-        return $"{this.Host}:{this.Port}";
-    }
+    public override string ToString() => $"{this.Host}:{this.Port}";
 
     public override bool Equals(object? obj)
     {
@@ -34,8 +31,5 @@ public class Node(string host, int port)
         return this.Port == node.Port && string.Equals(this.Host, node.Host, StringComparison.OrdinalIgnoreCase);
     }
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(this.Host, this.Port);
-    }
+    public override int GetHashCode() => HashCode.Combine(this.Host, this.Port);
 }

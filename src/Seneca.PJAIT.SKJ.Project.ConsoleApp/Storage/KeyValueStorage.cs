@@ -1,22 +1,19 @@
 namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Storage;
 
-public class SimpleKeyValueStorage
+public class KeyValueStorage
 {
+    private readonly object lockObject = new();
+
     private int key;
     private int value;
 
-    public void NewPair(Pair pair)
+    public void CreatePair(Pair other)
     {
-        lock (this)
+        lock (this.lockObject)
         {
-            this.key = pair.Key;
-            this.value = pair.Value;
+            this.key = other.Key;
+            this.value = other.Value;
         }
-    }
-
-    public bool KeyExists(int keyToCheck)
-    {
-        return this.key == keyToCheck;
     }
 
     public Pair? GetValue(int keyToFind)
@@ -26,7 +23,7 @@ public class SimpleKeyValueStorage
 
     public Pair? SetNewValue(int existingKey, int newValue)
     {
-        lock (this)
+        lock (this.lockObject)
         {
             if (this.KeyExists(existingKey))
             {
@@ -39,4 +36,6 @@ public class SimpleKeyValueStorage
     }
 
     public Pair GetPair() => new(this.key, this.value);
+
+    private bool KeyExists(int keyToCheck) => this.key == keyToCheck;
 }

@@ -1,6 +1,7 @@
 namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands;
 
-public class AddNodeCommand(Node nodeToAdd) : Command(CommandName, nodeToAdd.ToString())
+internal class AddNodeCommand(Node nodeToAdd)
+    : Command(CommandName, nodeToAdd.ToString())
 {
-    public static readonly string CommandName = "add-node";
+    public const string CommandName = "add-node";
 }

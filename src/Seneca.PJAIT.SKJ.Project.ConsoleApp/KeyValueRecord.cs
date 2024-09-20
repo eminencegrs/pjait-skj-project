@@ -1,10 +1,7 @@
 namespace Seneca.PJAIT.SKJ.Project.ConsoleApp;
 
-public class KeyValueRecord(string key, string value)
+public record KeyValueRecord(string Key, string Value)
 {
-    public string Key { get; } = key;
-    public string Value { get; } = value;
-
     public static KeyValueRecord Parse(string inputString)
     {
         string[] parts = inputString.Split(':');

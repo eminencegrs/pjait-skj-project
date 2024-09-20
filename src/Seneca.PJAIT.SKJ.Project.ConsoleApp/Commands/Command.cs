@@ -1,15 +1,9 @@
 namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands;
 
-public class Command
+public class Command(string operation, string? argument = null)
 {
-    public Command(string operation, string? argument = null)
-    {
-        this.Operation = operation;
-        this.Argument = argument;
-    }
-
-    public string Operation { get; }
-    public string? Argument { get; }
+    public string Operation { get; } = operation;
+    public string? Argument { get; } = argument;
 
     public static Command Parse(string input)
     {

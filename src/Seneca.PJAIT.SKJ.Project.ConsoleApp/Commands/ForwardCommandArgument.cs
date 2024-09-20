@@ -14,7 +14,11 @@ public class ForwardCommandArgument
     public Node From { get; }
     public string? Argument { get; }
 
-    public ForwardCommandArgument(string clientOperation, string sessionId, Node from, string? argument = null)
+    public ForwardCommandArgument(
+        string clientOperation,
+        string sessionId,
+        Node from,
+        string? argument = null)
     {
         this.ClientOperation = clientOperation;
         this.SessionId = sessionId;
@@ -50,24 +54,23 @@ public class ForwardCommandArgument
             throw new Exception(errMsg);
         }
 
-        string maybeArgument = null;
+        string? maybeArgument = null;
         if (argumentMatch.Success)
         {
             maybeArgument = argumentMatch.Groups[1].Value;
         }
 
-        return new ForwardCommandArgument(operationMatch.Groups[1].Value, sessionIdMatch.Groups[1].Value, Node.Parse(fromMatch.Groups[1].Value), maybeArgument);
+        return new ForwardCommandArgument(
+            operationMatch.Groups[1].Value,
+            sessionIdMatch.Groups[1].Value,
+            Node.Parse(fromMatch.Groups[1].Value),
+            maybeArgument);
     }
 
     public string Serialize()
     {
-        if (this.Argument != null)
-        {
-            return $"op={this.ClientOperation};sid={this.SessionId};from={this.From};arg={this.Argument}";
-        }
-        else
-        {
-            return $"op={this.ClientOperation};sid={this.SessionId};from={this.From}";
-        }
+        return this.Argument == null
+            ? $"op={this.ClientOperation};sid={this.SessionId};from={this.From}"
+            : $"op={this.ClientOperation};sid={this.SessionId};from={this.From};arg={this.Argument}";
     }
 }
