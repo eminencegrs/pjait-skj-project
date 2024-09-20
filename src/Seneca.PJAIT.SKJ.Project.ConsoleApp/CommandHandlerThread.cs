@@ -11,7 +11,8 @@ public class CommandHandlerThread
     private readonly TcpListener server;
     private readonly Dictionary<string, CommandHandlerBase> commandHandlers;
 
-    public CommandHandlerThread(TcpListener server, TcpClient client, Dictionary<string, CommandHandlerBase> commandHandlers)
+    public CommandHandlerThread(
+        TcpListener server, TcpClient client, Dictionary<string, CommandHandlerBase> commandHandlers)
     {
         this.client = client;
         this.server = server;
@@ -27,7 +28,7 @@ public class CommandHandlerThread
             var bytesRead = stream.Read(buffer, 0, buffer.Length);
             var receivedString = Encoding.ASCII.GetString(buffer, 0, bytesRead).Trim();
             var receivedCommand = Command.Parse(receivedString);
-            Console.WriteLine($"[CommandHandlerThread] Command received: [{receivedCommand}]. From: [{this.client.Client.RemoteEndPoint}]");
+            Console.WriteLine($"[{nameof(CommandHandlerThread)}] Command received: [{receivedCommand}]. From: [{this.client.Client.RemoteEndPoint}]");
 
             if (this.commandHandlers.TryGetValue(receivedCommand.Operation, out var handler))
             {
@@ -37,14 +38,14 @@ public class CommandHandlerThread
             }
             else
             {
-                Console.WriteLine($"[CommandHandlerThread] Operation [{receivedCommand.Operation}] not supported");
+                Console.WriteLine($"[{nameof(CommandHandlerThread)}] Operation [{receivedCommand.Operation}] not supported");
                 var errorResponseBytes = Encoding.ASCII.GetBytes(Responses.Error);
                 stream.Write(errorResponseBytes, 0, errorResponseBytes.Length);
             }
 
             if (receivedCommand.Operation == "terminate")
             {
-                Console.WriteLine("[CommandHandlerThread] Received terminate signal. Terminating...");
+                Console.WriteLine($"[{nameof(CommandHandlerThread)}] Received terminate signal. Terminating...");
                 this.client.Close();
                 this.server.Stop();
             }

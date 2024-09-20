@@ -3,7 +3,8 @@ using System.CommandLine.Binding;
 
 namespace Seneca.PJAIT.SKJ.Project.ConsoleApp;
 
-public class NodeBinder(Option<IEnumerable<string>> nodeOption) : BinderBase<IReadOnlyCollection<Node>>
+public class NodeBinder(Option<IEnumerable<string>> nodeOption)
+    : BinderBase<IReadOnlyCollection<Node>>
 {
     protected override IReadOnlyCollection<Node> GetBoundValue(BindingContext bindingContext)
     {

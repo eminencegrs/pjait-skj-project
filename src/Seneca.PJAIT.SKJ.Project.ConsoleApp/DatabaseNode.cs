@@ -11,62 +11,56 @@ namespace Seneca.PJAIT.SKJ.Project.ConsoleApp;
 // TODO: Refactoring.
 public class DatabaseNode
 {
+    private readonly KeyValueStorage keyValueStorage;
+    public DatabaseNode()
+    {
+        // TODO: initialize it via dependency injection.
+        this.keyValueStorage = new KeyValueStorage();
+    }
+
     public async Task Run(int tcpPort, KeyValueRecord record, IReadOnlyCollection<Node> nodes)
     {
         Console.WriteLine($"[{nameof(DatabaseNode)}] Starting...");
 
-        var nodesString = nodes.Any() ? string.Join(", ", nodes) : "<none>";
+        var nodesString = nodes.Count == 0 ? "<none>" : string.Join(", ", nodes);
+
         Console.WriteLine(
             $"[{nameof(DatabaseNode)}] Options: " +
             $"tcpPort='{tcpPort}', record='{record}', nodes='{nodesString}'.");
 
-        int initialKey = int.Parse(record.Key);
-        int initialValue = int.Parse(record.Value);
-        KeyValueStorage kvStorage = new KeyValueStorage();
-        kvStorage.CreatePair(new Pair(initialKey, initialValue));
+        // TODO: handle invalid values.
+        var initialKey = int.Parse(record.Key);
+        var initialValue = int.Parse(record.Value);
+        this.keyValueStorage.CreatePair(new Pair(initialKey, initialValue));
 
-        Node? self = null;
+        Node? self = default;
         try
         {
-            self = new Node(Dns.GetHostAddresses(Dns.GetHostName())[0].ToString(), tcpPort);
+            var host = (await Dns.GetHostAddressesAsync(Dns.GetHostName()))[0].ToString();
+            self = new Node(host, tcpPort);
         }
         catch (Exception ex)
         {
             throw new Exception("Unknown host", ex);
         }
 
-        NodeRegistry nodeRegistry = new NodeRegistry(new HashSet<Node>(), self);
+        var nodeRegistry = new NodeRegistry([], self);
+        foreach (var newNode in nodes)
+        {
+            var addNodeCommand = new AddNodeCommand(nodeRegistry.Self);
+            var response = nodeRegistry.SendMessageToNode(newNode, addNodeCommand.Serialize());
 
-        try
-        {
-            foreach (var newNode in nodes)
-            {
-                try
-                {
-                    var addNodeCmd = new AddNodeCommand(nodeRegistry.Self);
-                    string hostPortStr = nodeRegistry.SendMessageToNode(newNode, addNodeCmd.Serialize());
-                    nodeRegistry.AddNode(Node.Parse(hostPortStr));
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    throw;
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
+            // TODO: Improve it.
+            nodeRegistry.AddNode(Node.Parse(response));
         }
 
         var commandHandlerMap = new Dictionary<string, CommandHandlerBase>();
-        commandHandlerMap.Add(SetValueCommandHandler.OperationName, new SetValueCommandHandler(kvStorage, nodeRegistry));
-        commandHandlerMap.Add(GetValueCommandHandler.OperationName, new GetValueCommandHandler(kvStorage, nodeRegistry));
-        commandHandlerMap.Add(FindKeyCommandHandler.OperationName, new FindKeyCommandHandler(kvStorage, nodeRegistry));
-        commandHandlerMap.Add(GetMaxCommandHandler.OperationName, new GetMaxCommandHandler(kvStorage, nodeRegistry));
-        commandHandlerMap.Add(GetMinCommandHandler.OperationName, new GetMinCommandHandler(kvStorage, nodeRegistry));
-        commandHandlerMap.Add(NewRecordCommandHandler.OperationName, new NewRecordCommandHandler(kvStorage));
+        commandHandlerMap.Add(SetValueCommandHandler.OperationName, new SetValueCommandHandler(this.keyValueStorage, nodeRegistry));
+        commandHandlerMap.Add(GetValueCommandHandler.OperationName, new GetValueCommandHandler(this.keyValueStorage, nodeRegistry));
+        commandHandlerMap.Add(FindKeyCommandHandler.OperationName, new FindKeyCommandHandler(this.keyValueStorage, nodeRegistry));
+        commandHandlerMap.Add(GetMaxCommandHandler.OperationName, new GetMaxCommandHandler(this.keyValueStorage, nodeRegistry));
+        commandHandlerMap.Add(GetMinCommandHandler.OperationName, new GetMinCommandHandler(this.keyValueStorage, nodeRegistry));
+        commandHandlerMap.Add(NewRecordCommandHandler.OperationName, new NewRecordCommandHandler(this.keyValueStorage));
         commandHandlerMap.Add(AddNodeCommandHandler.OperationName, new AddNodeCommandHandler(nodeRegistry));
         commandHandlerMap.Add(RemoveNodeCommandHandler.OperationName, new RemoveNodeCommandHandler(nodeRegistry));
         commandHandlerMap.Add(TerminateCommandHandler.OperationName, new TerminateCommandHandler(nodeRegistry));
@@ -75,34 +69,24 @@ public class DatabaseNode
         // TODO: Refactoring.
         try
         {
-            try
-            {
-                using (var serverSocket = new TcpListener(IPAddress.Any, tcpPort))
-                {
-                    serverSocket.Start();
-                    Console.WriteLine(
-                        $"[DatabaseNode] Start listening for incoming connections on [{serverSocket.LocalEndpoint}]...");
+            using var serverSocket = new TcpListener(IPAddress.Any, tcpPort);
+            serverSocket.Start();
+            Console.WriteLine(
+                $"[{nameof(DatabaseNode)}] Start listening for incoming connections on [{serverSocket.LocalEndpoint}]...");
 
-                    while (true)
-                    {
-                        var clientSocket = await serverSocket.AcceptTcpClientAsync();
-                        _ = Task.Run(
-                            () => new CommandHandlerThread(serverSocket, clientSocket, commandHandlerMap).Run());
-                    }
-                }
-            }
-            catch (SocketException ex)
+            while (true)
             {
-                Console.WriteLine($"[DatabaseNode] SocketException: {ex.Message}");
-            }
-            catch (ThreadAbortException ex)
-            {
-                Console.WriteLine($"Thread was aborted: {ex.Message}");
+                var clientSocket = await serverSocket.AcceptTcpClientAsync();
+                _ = Task.Run(() => new CommandHandlerThread(serverSocket, clientSocket, commandHandlerMap).Run());
             }
         }
         catch (SocketException ex)
         {
-            Console.WriteLine($"[DatabaseNode] Received socket exception: {ex.Message}");
+            Console.WriteLine($"[{nameof(DatabaseNode)}] SocketException: {ex.Message}");
+        }
+        catch (ThreadAbortException ex)
+        {
+            Console.WriteLine($"[{nameof(DatabaseNode)}] ThreadAbortException: {ex.Message}");
         }
     }
 }

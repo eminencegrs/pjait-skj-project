@@ -3,7 +3,8 @@ using System.CommandLine.Binding;
 
 namespace Seneca.PJAIT.SKJ.Project.ConsoleApp;
 
-public class KeyValueRecordBinder(Option<string> recordOption) : BinderBase<KeyValueRecord>
+public class KeyValueRecordBinder(Option<string> recordOption)
+    : BinderBase<KeyValueRecord>
 {
     protected override KeyValueRecord GetBoundValue(BindingContext bindingContext)
     {
