@@ -1,38 +1,34 @@
 using System.Net;
 using System.Net.Sockets;
-using Seneca.PJAIT.SKJ.Project.ConsoleApp.Arguments;
 using Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands;
-using Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands.Handler;
-using Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands.Handler.Client;
-using Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands.Handler.Internal;
-using Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands.Models;
 using Seneca.PJAIT.SKJ.Project.ConsoleApp.Communication;
+using Seneca.PJAIT.SKJ.Project.ConsoleApp.Handlers;
+using Seneca.PJAIT.SKJ.Project.ConsoleApp.Handlers.Client;
+using Seneca.PJAIT.SKJ.Project.ConsoleApp.Handlers.Internal;
 using Seneca.PJAIT.SKJ.Project.ConsoleApp.Storage;
 
 namespace Seneca.PJAIT.SKJ.Project.ConsoleApp;
 
 public class DatabaseNode
 {
-    public async Task Run(string[] args)
+    public async Task Run(int tcpPort, KeyValueRecord record, IReadOnlyCollection<Node> nodes)
     {
-        Console.WriteLine("[DatabaseNode] Starting...");
+        Console.WriteLine($"[{nameof(DatabaseNode)}] Starting...");
 
-        // Parse arguments.
-        ParsedArgs parsedArgs = ArgumentParser.ParseArgs(args);
+        var nodesString = nodes.Any() ? string.Join(", ", nodes) : "<none>";
+        Console.WriteLine(
+            $"[{nameof(DatabaseNode)}] Options: " +
+            $"tcpPort='{tcpPort}', record='{record}', nodes='{nodesString}'.");
 
-        //Console.WriteLine($"[DatabaseNode] Parsed args = {parsedArgs}");
-
-        // Init a key value storage.
-        int initialKey = int.Parse(parsedArgs.Record.Key);
-        int initialValue = int.Parse(parsedArgs.Record.Value);
+        int initialKey = int.Parse(record.Key);
+        int initialValue = int.Parse(record.Value);
         SimpleKeyValueStorage kvStorage = new SimpleKeyValueStorage();
         kvStorage.NewPair(new Pair(initialKey, initialValue));
 
-        // Init a node registry.
         Node? self = null;
         try
         {
-            self = new Node(Dns.GetHostAddresses(Dns.GetHostName())[0].ToString(), parsedArgs.TcpPort);
+            self = new Node(Dns.GetHostAddresses(Dns.GetHostName())[0].ToString(), tcpPort);
         }
         catch (Exception ex)
         {
@@ -43,7 +39,7 @@ public class DatabaseNode
 
         try
         {
-            foreach (var newNode in parsedArgs.Connect)
+            foreach (var newNode in nodes)
             {
                 try
                 {
@@ -64,8 +60,7 @@ public class DatabaseNode
             throw;
         }
 
-        // Init command handlers.
-        var commandHandlerMap = new Dictionary<string, CommandHandler>();
+        var commandHandlerMap = new Dictionary<string, CommandHandlerBase>();
         commandHandlerMap.Add(SetValueCommandHandler.OperationName, new SetValueCommandHandler(kvStorage, nodeRegistry));
         commandHandlerMap.Add(GetValueCommandHandler.OperationName, new GetValueCommandHandler(kvStorage, nodeRegistry));
         commandHandlerMap.Add(FindKeyCommandHandler.OperationName, new FindKeyCommandHandler(kvStorage, nodeRegistry));
@@ -77,10 +72,9 @@ public class DatabaseNode
         commandHandlerMap.Add(TerminateCommandHandler.OperationName, new TerminateCommandHandler(nodeRegistry));
         commandHandlerMap.Add(ForwardCommandHandler.OperationName, new ForwardCommandHandler(commandHandlerMap, nodeRegistry));
 
-        // Open the socket and start listening.
         try
         {
-            using (var serverSocket = new TcpListener(IPAddress.Any, parsedArgs.TcpPort))
+            using (var serverSocket = new TcpListener(IPAddress.Any, tcpPort))
             {
                 serverSocket.Start();
                 Console.WriteLine($"[DatabaseNode] Start listening for incoming connections on [{serverSocket.LocalEndpoint}]...");

@@ -1,9 +1,9 @@
-using Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands.Models;
+using Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands;
 using Seneca.PJAIT.SKJ.Project.ConsoleApp.Communication;
 
-namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands.Handler.Client;
+namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Handlers.Client;
 
-public class TerminateCommandHandler : CommandHandler
+public class TerminateCommandHandler : CommandHandlerBase
 {
     public static readonly string OperationName = "terminate";
 

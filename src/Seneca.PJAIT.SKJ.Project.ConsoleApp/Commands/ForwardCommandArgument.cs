@@ -1,7 +1,6 @@
 using System.Text.RegularExpressions;
-using Seneca.PJAIT.SKJ.Project.ConsoleApp.Arguments;
 
-namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands.Models;
+namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands;
 
 public class ForwardCommandArgument
 {

@@ -33,15 +33,10 @@ public class SimpleKeyValueStorage
                 this.value = newValue;
                 return this.GetPair();
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
     }
 
-    public Pair GetPair()
-    {
-        return new Pair(this.key, this.value);
-    }
+    public Pair GetPair() => new(this.key, this.value);
 }

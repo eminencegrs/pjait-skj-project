@@ -12,8 +12,4 @@ public class Pair(int key, int value)
     }
 
     public override string ToString() => $"{this.Key}:{this.Value}";
-
-    public static int Compare(Pair first, Pair second) => first.Value.CompareTo(second.Value);
-
-    public int CompareTo(Pair other) => this.Value.CompareTo(other.Value);
 }

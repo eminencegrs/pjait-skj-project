@@ -1,4 +1,4 @@
-namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Arguments;
+namespace Seneca.PJAIT.SKJ.Project.ConsoleApp;
 
 public class KeyValueRecord(string key, string value)
 {

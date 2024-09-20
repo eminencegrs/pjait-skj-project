@@ -1,10 +1,10 @@
-using Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands.Models;
+using Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands;
 using Seneca.PJAIT.SKJ.Project.ConsoleApp.Communication;
 using Seneca.PJAIT.SKJ.Project.ConsoleApp.Storage;
 
-namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands.Handler.Client;
+namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Handlers.Client;
 
-public class FindKeyCommandHandler : CommandHandler
+public class FindKeyCommandHandler : CommandHandlerBase
 {
     public static readonly string OperationName = "find-key";
 

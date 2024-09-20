@@ -1,4 +1,4 @@
-namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Arguments;
+namespace Seneca.PJAIT.SKJ.Project.ConsoleApp;
 
 public class Node(string host, int port)
 {
@@ -7,6 +7,7 @@ public class Node(string host, int port)
 
     public static Node Parse(string inputString)
     {
+        ArgumentException.ThrowIfNullOrEmpty(inputString);
         string[] parts = inputString.Split(':');
         return new Node(parts[0], int.Parse(parts[1]));
     }

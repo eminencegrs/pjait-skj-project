@@ -1,18 +1,17 @@
-using Seneca.PJAIT.SKJ.Project.ConsoleApp.Arguments;
-using Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands.Models;
+using Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands;
 using Seneca.PJAIT.SKJ.Project.ConsoleApp.Communication;
 using Seneca.PJAIT.SKJ.Project.ConsoleApp.Storage;
 
-namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands.Handler.Client;
+namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Handlers.Client;
 
-public class GetMinCommandHandler : CommandHandler
+public class GetMaxCommandHandler : CommandHandlerBase
 {
-    public static readonly string OperationName = "get-min";
+    public static readonly string OperationName = "get-max";
 
     private readonly SimpleKeyValueStorage kvStorage;
     private readonly NodeRegistry nodeRegistry;
 
-    public GetMinCommandHandler(SimpleKeyValueStorage kvStorage, NodeRegistry nodeRegistry)
+    public GetMaxCommandHandler(SimpleKeyValueStorage kvStorage, NodeRegistry nodeRegistry)
     {
         this.kvStorage = kvStorage;
         this.nodeRegistry = nodeRegistry;
@@ -37,10 +36,10 @@ public class GetMinCommandHandler : CommandHandler
 
         valuesToCompare.Add(ownPair);
 
-        Pair minPair = valuesToCompare.MinBy(x => x.Value) ?? ownPair;
+        Pair maxPair = valuesToCompare.MaxBy(x => x.Value) ?? ownPair;
 
-        Console.WriteLine($"[GetMinCommandHandler] Min value is: [{minPair}]");
+        Console.WriteLine("[GetMaxCommandHandler] Max value is: [{0}]", maxPair);
 
-        return minPair.ToString();
+        return maxPair.ToString();
     }
 }

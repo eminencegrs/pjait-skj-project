@@ -1,19 +1,17 @@
-using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands.Handler;
-using Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands.Models;
+using Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands;
+using Seneca.PJAIT.SKJ.Project.ConsoleApp.Handlers;
 
-namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands;
+namespace Seneca.PJAIT.SKJ.Project.ConsoleApp;
 
-public class CommandHandlerThread : IDisposable
+public class CommandHandlerThread
 {
     private readonly TcpClient client;
     private readonly TcpListener server;
-    private readonly Dictionary<string, CommandHandler> commandHandlers;
-    private bool isDisposed = false;
+    private readonly Dictionary<string, CommandHandlerBase> commandHandlers;
 
-    public CommandHandlerThread(TcpListener server, TcpClient client, Dictionary<string, CommandHandler> commandHandlers)
+    public CommandHandlerThread(TcpListener server, TcpClient client, Dictionary<string, CommandHandlerBase> commandHandlers)
     {
         this.client = client;
         this.server = server;
@@ -28,9 +26,8 @@ public class CommandHandlerThread : IDisposable
             var buffer = new byte[1024];
             var bytesRead = stream.Read(buffer, 0, buffer.Length);
             var receivedString = Encoding.ASCII.GetString(buffer, 0, bytesRead).Trim();
-            var hostAddress = ((IPEndPoint)this.client.Client.RemoteEndPoint).Address.ToString();
             var receivedCommand = Command.Parse(receivedString);
-            Console.WriteLine($"[CommandHandlerThread] Command received: [{receivedCommand}]. From: [{hostAddress}:{this.client.Client.RemoteEndPoint}]");
+            Console.WriteLine($"[CommandHandlerThread] Command received: [{receivedCommand}]. From: [{this.client.Client.RemoteEndPoint}]");
 
             if (this.commandHandlers.TryGetValue(receivedCommand.Operation, out var handler))
             {
@@ -56,34 +53,5 @@ public class CommandHandlerThread : IDisposable
         {
             throw new Exception(e.Message);
         }
-    }
-
-    public void Dispose()
-    {
-        this.Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (this.isDisposed)
-        {
-            return;
-        }
-
-        if (disposing)
-        {
-            this.client.Close();
-            this.client.Dispose();
-            this.server.Stop();
-            this.server.Dispose();
-        }
-
-        this.isDisposed = true;
-    }
-
-    ~CommandHandlerThread()
-    {
-        this.Dispose(false);
     }
 }

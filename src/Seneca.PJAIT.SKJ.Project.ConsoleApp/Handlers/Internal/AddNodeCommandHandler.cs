@@ -1,10 +1,9 @@
-using Seneca.PJAIT.SKJ.Project.ConsoleApp.Arguments;
-using Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands.Models;
+using Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands;
 using Seneca.PJAIT.SKJ.Project.ConsoleApp.Communication;
 
-namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands.Handler.Internal;
+namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Handlers.Internal;
 
-public class AddNodeCommandHandler : CommandHandler
+public class AddNodeCommandHandler : CommandHandlerBase
 {
     public static readonly string OperationName = AddNodeCommand.CommandName;
 

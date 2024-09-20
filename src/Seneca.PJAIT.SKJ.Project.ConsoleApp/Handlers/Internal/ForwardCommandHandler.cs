@@ -1,18 +1,18 @@
-using Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands.Models;
+using Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands;
 using Seneca.PJAIT.SKJ.Project.ConsoleApp.Communication;
 
-namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands.Handler.Internal;
+namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Handlers.Internal;
 
-public class ForwardCommandHandler : CommandHandler
+public class ForwardCommandHandler : CommandHandlerBase
 {
     public static readonly string OperationName = ForwardCommand.CommandName;
 
-    private readonly Dictionary<string, CommandHandler> cmdHandlers;
+    private readonly Dictionary<string, CommandHandlerBase> cmdHandlers;
     private readonly NodeRegistry nodeRegistry;
 
-    public ForwardCommandHandler(Dictionary<string, CommandHandler> commandHandlers, NodeRegistry nodeRegistry)
+    public ForwardCommandHandler(Dictionary<string, CommandHandlerBase> commandHandlers, NodeRegistry nodeRegistry)
     {
-        this.cmdHandlers = new Dictionary<string, CommandHandler>(commandHandlers);
+        this.cmdHandlers = new Dictionary<string, CommandHandlerBase>(commandHandlers);
         this.nodeRegistry = nodeRegistry;
     }
 
@@ -29,7 +29,7 @@ public class ForwardCommandHandler : CommandHandler
                 return Responses.Error;
             }
 
-            if (!this.cmdHandlers.TryGetValue(internalArg.ClientOperation, out CommandHandler commandHandler))
+            if (!this.cmdHandlers.TryGetValue(internalArg.ClientOperation, out CommandHandlerBase commandHandler))
             {
                 Console.WriteLine($"[ForwardCommandHandler] Can't find command handler for operation [{internalArg.ClientOperation}]");
                 return Responses.Error;

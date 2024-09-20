@@ -1,7 +1,6 @@
 using System.Collections.Concurrent;
 using System.Net.Sockets;
-using Seneca.PJAIT.SKJ.Project.ConsoleApp.Arguments;
-using Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands.Models;
+using Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands;
 
 namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Communication;
 
