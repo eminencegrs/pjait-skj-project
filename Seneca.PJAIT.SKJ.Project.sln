@@ -1,12 +1,12 @@
 ﻿Microsoft Visual Studio Solution File, Format Version 12.00
 
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Seneca.PJAIT.SKJ.Project.App", "src\Seneca.PJAIT.SKJ.Project.App\Seneca.PJAIT.SKJ.Project.App.csproj", "{986AE176-BA55-40A0-B8E5-9F38C062946A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Seneca.PJAIT.SKJ.Project.ConsoleApp", "src\Seneca.PJAIT.SKJ.Project.ConsoleApp\Seneca.PJAIT.SKJ.Project.ConsoleApp.csproj", "{986AE176-BA55-40A0-B8E5-9F38C062946A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8E48C3E0-D0FB-40F6-A39E-AB4EE26B0C6E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{88A5BC2A-4380-4C79-9C7F-2ACEAF91EAEC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Seneca.PJAIT.SKJ.Project.App.UnitTests", "tests\Seneca.PJAIT.SKJ.Project.App.UnitTests\Seneca.PJAIT.SKJ.Project.App.UnitTests.csproj", "{303F708C-6A87-4C72-A264-07AD22680CA1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Seneca.PJAIT.SKJ.Project.ConsoleApp.UnitTests", "tests\Seneca.PJAIT.SKJ.Project.ConsoleApp.UnitTests\Seneca.PJAIT.SKJ.Project.ConsoleApp.UnitTests.csproj", "{303F708C-6A87-4C72-A264-07AD22680CA1}"
 EndProject
 
 Global
