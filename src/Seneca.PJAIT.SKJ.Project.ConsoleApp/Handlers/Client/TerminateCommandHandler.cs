@@ -3,18 +3,18 @@ using Seneca.PJAIT.SKJ.Project.ConsoleApp.Services;
 
 namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Handlers.Client;
 
-public class TerminateCommandHandler(NodeRegistry nodeRegistry)
+internal class TerminateCommandHandler(INodeRegistry nodeRegistry)
     : CommandHandlerBase
 {
     public static readonly string OperationName = "terminate";
 
-    protected override string GetOperationName() => OperationName;
+    public override string GetOperationName() => OperationName;
 
     public override string Handle(Command command, string sessionId)
     {
         var removeNodeCommand = new RemoveNodeCommand(nodeRegistry.Self);
 
-        foreach (var node in nodeRegistry.Nodes)
+        foreach (var node in nodeRegistry.ConnectedNodes)
         {
             nodeRegistry.SendMessageToNode(node, removeNodeCommand.Serialize());
         }

@@ -3,12 +3,12 @@ using Seneca.PJAIT.SKJ.Project.ConsoleApp.Storage;
 
 namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Handlers.Client;
 
-public class NewRecordCommandHandler(IKeyValueStorage keyValueStorage)
+internal class NewRecordCommandHandler(IKeyValueStorage keyValueStorage)
     : CommandHandlerBase
 {
     public static readonly string OperationName = "new-record";
 
-    protected override string GetOperationName() => OperationName;
+    public override string GetOperationName() => OperationName;
 
     public override string? Handle(Command command, string sessionId)
     {

@@ -6,7 +6,7 @@ public abstract class CommandHandlerBase
 {
     public abstract string? Handle(Command command, string sessionId);
 
-    protected abstract string GetOperationName();
+    public abstract string GetOperationName();
 
     protected string? WithRequiredArgument(Command command, Func<string, string?> function)
     {

@@ -4,12 +4,12 @@ using Seneca.PJAIT.SKJ.Project.ConsoleApp.Storage;
 
 namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Handlers.Client;
 
-public class GetValueCommandHandler(IKeyValueStorage keyValueStorage, NodeRegistry nodeRegistry)
+internal class GetValueCommandHandler(IKeyValueStorage keyValueStorage, INodeRegistry nodeRegistry)
     : CommandHandlerBase
 {
     public static readonly string OperationName = "get-value";
 
-    protected override string GetOperationName() => OperationName;
+    public override string GetOperationName() => OperationName;
 
     public override string? Handle(Command command, string sessionId)
     {

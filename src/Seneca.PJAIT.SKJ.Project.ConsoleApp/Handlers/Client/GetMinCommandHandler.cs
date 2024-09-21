@@ -4,12 +4,12 @@ using Seneca.PJAIT.SKJ.Project.ConsoleApp.Storage;
 
 namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Handlers.Client;
 
-public class GetMinCommandHandler(IKeyValueStorage keyValueStorage, NodeRegistry nodeRegistry)
+internal class GetMinCommandHandler(IKeyValueStorage keyValueStorage, INodeRegistry nodeRegistry)
     : CommandHandlerBase
 {
     public static readonly string OperationName = "get-min";
 
-    protected override string GetOperationName() => OperationName;
+    public override string GetOperationName() => OperationName;
 
     public override string Handle(Command command, string sessionId)
     {

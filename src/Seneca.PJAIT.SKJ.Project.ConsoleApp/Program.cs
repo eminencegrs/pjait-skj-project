@@ -8,4 +8,5 @@ var host = Host.CreateDefaultBuilder(args)
     .Build();
 
 var appProcessor = host.Services.GetRequiredService<AppProcessor>();
+
 await appProcessor.Run(args);

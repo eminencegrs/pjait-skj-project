@@ -2,7 +2,7 @@ using Seneca.PJAIT.SKJ.Project.ConsoleApp.Storage;
 
 namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Extensions;
 
-public static class KeyValueRecordExtensions
+internal static class KeyValueRecordExtensions
 {
     public static Pair ToPair(this KeyValueRecord record)
     {

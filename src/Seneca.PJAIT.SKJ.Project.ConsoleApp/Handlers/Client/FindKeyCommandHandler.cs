@@ -4,12 +4,12 @@ using Seneca.PJAIT.SKJ.Project.ConsoleApp.Storage;
 
 namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Handlers.Client;
 
-public class FindKeyCommandHandler(IKeyValueStorage keyValueStorage, NodeRegistry nodeRegistry)
+internal class FindKeyCommandHandler(IKeyValueStorage keyValueStorage, INodeRegistry nodeRegistry)
     : CommandHandlerBase
 {
     public static readonly string OperationName = "find-key";
 
-    protected override string GetOperationName() => OperationName;
+    public override string GetOperationName() => OperationName;
 
     public override string? Handle(Command command, string sessionId)
     {

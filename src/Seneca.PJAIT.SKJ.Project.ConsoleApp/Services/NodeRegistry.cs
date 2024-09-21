@@ -5,27 +5,38 @@ using Seneca.PJAIT.SKJ.Project.ConsoleApp.Extensions;
 
 namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Services;
 
-public class NodeRegistry(HashSet<Node> nodes, Node self)
+internal class NodeRegistry : INodeRegistry
 {
     private readonly ConcurrentDictionary<string, HashSet<Node>> visitedNodesBySessionIds = new();
 
-    public HashSet<Node> Nodes { get; } = nodes;
-    public Node Self { get; } = self;
-
-    public void AddNode(Node newNode)
+    public NodeRegistry()
     {
-        this.Nodes.Add(newNode);
-        Console.WriteLine(
-            $"[{nameof(NodeRegistry)}] Added a new node [{newNode}] to the registry. " +
-            $"The current registry content: [{this.Nodes.ToSeparatedString()}]");
+        this.ConnectedNodes = [];
     }
 
-    public void RemoveNode(Node node)
+    public HashSet<Node> ConnectedNodes { get; private set; }
+
+    public Node Self { get; private set; }
+
+    public void Initialize(Node node)
     {
-        this.Nodes.Remove(node);
+        this.Self = node;
+    }
+
+    public void AddConnectedNode(Node newNode)
+    {
+        this.ConnectedNodes.Add(newNode);
+        Console.WriteLine(
+            $"[{nameof(NodeRegistry)}] Added a new node [{newNode}] to the registry. " +
+            $"The current registry content: [{this.ConnectedNodes.ToSeparatedString()}]");
+    }
+
+    public void RemoveConnectedNode(Node node)
+    {
+        this.ConnectedNodes.Remove(node);
         Console.WriteLine(
             $"[{nameof(NodeRegistry)}] Removed the node [{node}] from the registry. " +
-            $"The current registry content: [{this.Nodes.ToSeparatedString()}]");
+            $"The current registry content: [{this.ConnectedNodes.ToSeparatedString()}]");
     }
 
     public string? SendMessageToNode(Node target, string message)
@@ -139,7 +150,7 @@ public class NodeRegistry(HashSet<Node> nodes, Node self)
     private HashSet<Node> GetUnvisitedNodesForSession(string sessionId)
     {
         var visitedNodes = this.visitedNodesBySessionIds.GetValueOrDefault(sessionId, []);
-        return this.Nodes.Where(node => !visitedNodes.Contains(node)).ToHashSet();
+        return this.ConnectedNodes.Where(node => !visitedNodes.Contains(node)).ToHashSet();
     }
 
     public bool ProcessedSessionId(string sessionId)

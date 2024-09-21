@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 
 namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands;
 
-public class ForwardCommandArgument
+internal class ForwardCommandArgument
 {
     private static readonly string OperationRegex = "op=([^;\\r\\n]*)";
     private static readonly string SessionIdRegex = "sid=([^;\\r\\n]*)";

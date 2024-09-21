@@ -1,6 +1,6 @@
 namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Extensions;
 
-public static class NodeExtensions
+internal static class NodeExtensions
 {
     public static string ToSeparatedString(this IEnumerable<Node> nodes, string separator = ",") =>
         string.Join(separator, nodes.Select(node => node.ToString()));
