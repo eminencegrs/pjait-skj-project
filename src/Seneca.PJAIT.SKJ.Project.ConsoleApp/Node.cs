@@ -1,6 +1,6 @@
 namespace Seneca.PJAIT.SKJ.Project.ConsoleApp;
 
-public class Node
+public record Node
 {
     public Node(string host, int port)
     {
@@ -16,23 +16,6 @@ public class Node
     public int Port { get; }
 
     public override string ToString() => $"{this.Host}:{this.Port}";
-
-    public override bool Equals(object? obj)
-    {
-        if (this == obj)
-        {
-            return true;
-        }
-
-        if (obj == null || this.GetType() != obj.GetType())
-        {
-            return false;
-        }
-
-        Node node = (Node)obj;
-
-        return this.Port == node.Port && string.Equals(this.Host, node.Host, StringComparison.OrdinalIgnoreCase);
-    }
 
     public override int GetHashCode() => HashCode.Combine(this.Host, this.Port);
 

@@ -15,7 +15,7 @@ public class NewRecordCommandHandler(KeyValueStorage keyValueStorage)
         return this.WithRequiredArgument(command, arg =>
         {
             var pair = Pair.Parse(arg);
-            keyValueStorage.CreatePair(pair);
+            keyValueStorage.SetKeyValue(pair);
             Console.WriteLine($"[{nameof(NewRecordCommandHandler)}] Saved the new pair: {pair}");
             return Responses.Ok;
         });

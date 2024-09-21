@@ -1,10 +1,7 @@
 namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Storage;
 
-public class Pair(int key, int value)
+public record Pair(int Key, int Value)
 {
-    public int Key { get; } = key;
-    public int Value { get; } = value;
-
     public static Pair Parse(string str)
     {
         var splitString = str.Split(':');

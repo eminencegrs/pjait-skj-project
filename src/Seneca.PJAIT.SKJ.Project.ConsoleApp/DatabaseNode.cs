@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Sockets;
 using Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands;
+using Seneca.PJAIT.SKJ.Project.ConsoleApp.Extensions;
 using Seneca.PJAIT.SKJ.Project.ConsoleApp.Handlers;
 using Seneca.PJAIT.SKJ.Project.ConsoleApp.Handlers.Client;
 using Seneca.PJAIT.SKJ.Project.ConsoleApp.Handlers.Internal;
@@ -28,10 +29,7 @@ public class DatabaseNode
             $"[{nameof(DatabaseNode)}] Options: " +
             $"tcpPort='{tcpPort}', record='{record}', nodes='{nodesString}'.");
 
-        // TODO: handle invalid values.
-        var initialKey = int.Parse(record.Key);
-        var initialValue = int.Parse(record.Value);
-        this.keyValueStorage.CreatePair(new Pair(initialKey, initialValue));
+        this.keyValueStorage.SetKeyValue(record.ToPair());
 
         Node? self = default;
         try

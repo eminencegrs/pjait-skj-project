@@ -7,7 +7,7 @@ public class KeyValueStorage
     private int key;
     private int value;
 
-    public void CreatePair(Pair other)
+    public void SetKeyValue(Pair other)
     {
         lock (this.lockObject)
         {
