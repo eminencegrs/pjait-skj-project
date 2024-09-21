@@ -1,9 +1,11 @@
-﻿using System.CommandLine;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Seneca.PJAIT.SKJ.Project.ConsoleApp;
+using Seneca.PJAIT.SKJ.Project.ConsoleApp.DependencyInjection;
 
-RootCommand rootCommand = RootCommandFactory.CreateRootCommand(
-    new DatabaseNode(),
-    (node, port, record, nodes) => node.Run(port, record, nodes));
+var host = Host.CreateDefaultBuilder(args)
+    .ConfigureServices(x => x.RegisterDependencies())
+    .Build();
 
-await rootCommand.InvokeAsync(args);
+var appProcessor = host.Services.GetRequiredService<AppProcessor>();
+await appProcessor.Run(args);

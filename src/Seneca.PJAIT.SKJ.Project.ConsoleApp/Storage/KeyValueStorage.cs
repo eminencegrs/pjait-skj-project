@@ -1,6 +1,15 @@
 namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Storage;
 
-public class KeyValueStorage
+public interface IKeyValueStorage
+{
+    void SetKeyValue(Pair other);
+    //Pair? SetKeyValue(int existingKey, int newValue);
+    Pair? GetValue(int keyToFind);
+    Pair? SetNewValue(int existingKey, int newValue);
+    Pair GetPair();
+}
+
+public class KeyValueStorage : IKeyValueStorage
 {
     private readonly object lockObject = new();
 

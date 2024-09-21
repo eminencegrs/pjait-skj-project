@@ -1,4 +1,5 @@
 using Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands;
+using Seneca.PJAIT.SKJ.Project.ConsoleApp.Services;
 
 namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Handlers.Client;
 

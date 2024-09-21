@@ -3,7 +3,7 @@ using Seneca.PJAIT.SKJ.Project.ConsoleApp.Storage;
 
 namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Handlers.Client;
 
-public class NewRecordCommandHandler(KeyValueStorage keyValueStorage)
+public class NewRecordCommandHandler(IKeyValueStorage keyValueStorage)
     : CommandHandlerBase
 {
     public static readonly string OperationName = "new-record";

@@ -3,7 +3,7 @@ using System.Net.Sockets;
 using Seneca.PJAIT.SKJ.Project.ConsoleApp.Commands;
 using Seneca.PJAIT.SKJ.Project.ConsoleApp.Extensions;
 
-namespace Seneca.PJAIT.SKJ.Project.ConsoleApp;
+namespace Seneca.PJAIT.SKJ.Project.ConsoleApp.Services;
 
 public class NodeRegistry(HashSet<Node> nodes, Node self)
 {

@@ -5,8 +5,8 @@ namespace Seneca.PJAIT.SKJ.Project.ConsoleApp;
 public static class RootCommandFactory
 {
     public static RootCommand CreateRootCommand(
-        DatabaseNode databaseNode,
-        Func<DatabaseNode, int, KeyValueRecord, IReadOnlyCollection<Node>, Task> handler)
+        IDatabaseNode databaseNode,
+        Func<IDatabaseNode, int, KeyValueRecord, IReadOnlyCollection<Node>, Task> handler)
     {
         var tcpPortOption = CommandLineOptions.GetTcpPortOption();
         var recordOption = CommandLineOptions.GetRecordOption();
